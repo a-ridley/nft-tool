@@ -12,9 +12,17 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+### Send Hbar
+Simply upload a csv file that has a column with the name Account or account. This represents the wallet addresses.
+Next, set up your client and enter the amount of hbar to send.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+### Send NFT
+Simply upload a csv file that has a column with the name Account or account.
+Next, set up your client
+Enter the token id
+and sumbit.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+### Mint NFT
+Currently, creates a new treasury account each time and requires you to update the code with the metadata required to mint. 
+Once that is done, hit the submit button.
 
