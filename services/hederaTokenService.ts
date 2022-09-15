@@ -18,8 +18,8 @@ export const createToken = async (
     .setInitialSupply(0)
     .setTreasuryAccountId(treasureyAccId)
     .setSupplyKey(supplyKey)
-    .setMaxTransactionFee(new Hbar(30)) // you will be charged only what the network is asking for (charges you ~.001 usd in hbar)
-    .freezeWith(client); //freeze tx from from any further mods.
+    .setMaxTransactionFee(new Hbar(30)) 
+    .freezeWith(client);
 
   const createTokenTxnSigned = await createTokenTxn.sign(treasuryAccPvKey);
   // submit txn to heder network
