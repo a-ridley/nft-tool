@@ -12,8 +12,8 @@ export const createToken = async (
 ) => {
   // create a transaction with token type fungible
   const createTokenTxn = new TokenCreateTransaction()
-    .setTokenName(tokenName) // publicly visible name of token
-    .setTokenSymbol(tokenSymbol) //publicly viisble symbol of token (ie. DOGE, ETH)
+    .setTokenName(tokenName) 
+    .setTokenSymbol(tokenSymbol)
     .setTokenType(TokenType.NonFungibleUnique)
     .setInitialSupply(0)
     .setTreasuryAccountId(treasureyAccId)
