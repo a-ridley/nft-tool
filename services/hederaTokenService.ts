@@ -1,6 +1,8 @@
-import { TokenCreateTransaction, Hbar, TokenType, TokenMintTransaction, TokenId, Client, PrivateKey, AccountId } from '@hashgraph/sdk';
+import { TokenCreateTransaction, Hbar, TokenType, TokenMintTransaction, TokenId, Client, PrivateKey, AccountId, TokenInfoQuery } from '@hashgraph/sdk';
 import { createAccount } from './hederaAccountService';
-import { createHederaClient } from './hederaTransactionExecutors';
+import { NFTStorage, File } from "nft.storage";
+import fs from "fs";
+import { MetadataUploadInfo, uploadNFTMetadatasToIPFS } from './tokenMetadataService';
 
 export const createToken = async (
   client: Client,
@@ -12,13 +14,13 @@ export const createToken = async (
 ) => {
   // create a transaction with token type fungible
   const createTokenTxn = new TokenCreateTransaction()
-    .setTokenName(tokenName) 
+    .setTokenName(tokenName)
     .setTokenSymbol(tokenSymbol)
     .setTokenType(TokenType.NonFungibleUnique)
     .setInitialSupply(0)
     .setTreasuryAccountId(treasureyAccId)
     .setSupplyKey(supplyKey)
-    .setMaxTransactionFee(new Hbar(30)) 
+    .setMaxTransactionFee(new Hbar(30))
     .freezeWith(client);
 
   const createTokenTxnSigned = await createTokenTxn.sign(treasuryAccPvKey);
@@ -54,7 +56,14 @@ export const mintToken = async (client: Client, tokenId: string | TokenId, metad
 };
 
 
-export const createNewNftCollection = async (client: Client, tokenName: string, tokenSymbol: string): Promise<{
+export const createNewNftCollection = async (
+  client: Client,
+  tokenName: string,
+  tokenSymbol: string,
+  nftStorageApiKey: string,
+  metadataUploadInfo: MetadataUploadInfo,
+  files: File[],
+): Promise<{
   tokenId: string,
   treasuryAccountId: string,
   treasuryAccountPrivateKey: string,
@@ -75,8 +84,10 @@ export const createNewNftCollection = async (client: Client, tokenName: string, 
   }
   // make array containing metadata for minting
   
-  //TODO: ADD IPFS CID
-  const metadatas: Uint8Array[] = [Buffer.from('')];
+  // NOTE: Make sure the files are ordered from lowest to highest serial number
+  const metadataUrls = await uploadNFTMetadatasToIPFS(nftStorageApiKey, metadataUploadInfo, files);
+  const metadatas: Uint8Array[] = metadataUrls.map(url => Buffer.from(url));
+
   // mint token
   await mintToken(client, tokenId, metadatas, supplyKey);
   return {
@@ -86,3 +97,4 @@ export const createNewNftCollection = async (client: Client, tokenName: string, 
     treasuryAccountPrivateKey: treasuryAccPvKey.toStringRaw(),
   };
 }
+
