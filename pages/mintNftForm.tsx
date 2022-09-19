@@ -1,7 +1,7 @@
 import { NextPage } from "next"
 import { useSelector } from 'react-redux';
 import { AppStore } from "../store";
-import { createNewNftCollection, createToken, mintToken } from "../services/hederaTokenService";
+import { createNewNftCollection } from "../services/hederaTokenService";
 import { createHederaClient } from "../services/hederaTransactionExecutors";
 import { Group, TextInput, Text, Space, Button, Container } from "@mantine/core";
 import { Dropzone } from "@mantine/dropzone";

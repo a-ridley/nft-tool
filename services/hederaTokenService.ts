@@ -1,10 +1,9 @@
-import { TokenCreateTransaction, Hbar, TokenType, TokenMintTransaction, TokenId, Client, PrivateKey, AccountId, TokenInfoQuery } from '@hashgraph/sdk';
+import { TokenCreateTransaction, Hbar, TokenType, TokenMintTransaction, TokenId, Client, PrivateKey, AccountId } from '@hashgraph/sdk';
 import { createAccount } from './hederaAccountService';
-import { NFTStorage, File } from "nft.storage";
-import fs from "fs";
+import { File } from "nft.storage";
 import { MetadataUploadInfo, uploadNFTMetadatasToIPFS } from './tokenMetadataService';
 
-export const createToken = async (
+export const createNonFungibleToken = async (
   client: Client,
   treasureyAccId: string | AccountId,
   supplyKey: PrivateKey,
@@ -24,7 +23,7 @@ export const createToken = async (
     .freezeWith(client);
 
   const createTokenTxnSigned = await createTokenTxn.sign(treasuryAccPvKey);
-  // submit txn to heder network
+  // submit txn to hedera network
   const txnResponse = await createTokenTxnSigned.execute(client);
   // request receipt of txn
   const txnRx = await txnResponse.getReceipt(client);
@@ -39,6 +38,8 @@ export const createToken = async (
 };
 
 export const mintToken = async (client: Client, tokenId: string | TokenId, metadatas: Uint8Array[], supplyKey: PrivateKey) => {
+  // NOTE: May need to increase token supply
+
   const mintTokenTxn = new TokenMintTransaction()
     .setTokenId(tokenId)
     .setMetadata(metadatas)
@@ -46,7 +47,7 @@ export const mintToken = async (client: Client, tokenId: string | TokenId, metad
 
   const mintTokenTxnSigned = await mintTokenTxn.sign(supplyKey);
 
-  // submit txn to heder network
+  // submit txn to hedera network
   const txnResponse = await mintTokenTxnSigned.execute(client);
 
   const mintTokenRx = await txnResponse.getReceipt(client);
@@ -54,6 +55,21 @@ export const mintToken = async (client: Client, tokenId: string | TokenId, metad
 
   console.log(`Token mint was a ${mintTokenStatus}`);
 };
+
+export const addNftsToExistingCollection = async (
+  client: Client,
+  tokenId: TokenId,
+  supplyKey: PrivateKey,
+  nftStorageApiKey: string,
+  metadataUploadInfo: MetadataUploadInfo,
+  files: File[],
+) => {
+  const metadataUrls = await uploadNFTMetadatasToIPFS(nftStorageApiKey, metadataUploadInfo, files);
+  const metadatas: Uint8Array[] = metadataUrls.map(url => Buffer.from(url));
+
+  // mint token
+  await mintToken(client, tokenId, metadatas, supplyKey);
+}
 
 
 export const createNewNftCollection = async (
@@ -78,12 +94,13 @@ export const createNewNftCollection = async (
     throw new Error("treasuryAccountId is null");
   }
 
-  const tokenId = await createToken(client, treasuryAccountId, supplyKey, treasuryAccPvKey, tokenName, tokenSymbol);
+  console.log(`Treasury Account Id: ${treasuryAccountId} Treasury Account Private Key: ${treasuryAccPvKey}`);
+
+  const tokenId = await createNonFungibleToken(client, treasuryAccountId, supplyKey, treasuryAccPvKey, tokenName, tokenSymbol);
   if (tokenId === null) {
     throw new Error("Somehow tokenId is null");
   }
   // make array containing metadata for minting
-  
   // NOTE: Make sure the files are ordered from lowest to highest serial number
   const metadataUrls = await uploadNFTMetadatasToIPFS(nftStorageApiKey, metadataUploadInfo, files);
   const metadatas: Uint8Array[] = metadataUrls.map(url => Buffer.from(url));
