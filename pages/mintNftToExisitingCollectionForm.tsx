@@ -1,11 +1,12 @@
 import { NextPage } from "next"
 import { useSelector } from 'react-redux';
 import { AppStore } from "../store";
-import { createNewNftCollection } from "../services/hederaTokenService";
+import { addNftsToExistingCollection, createNewNftCollection } from "../services/hederaTokenService";
 import { createHederaClient } from "../services/hederaTransactionExecutors";
 import { Group, TextInput, Text, Space, Button, Container } from "@mantine/core";
 import { Dropzone } from "@mantine/dropzone";
 import { useState } from "react";
+import { PrivateKey } from "@hashgraph/sdk";
 
 
 const MintNftToExisitingCollectionForm: NextPage = () => {
@@ -15,8 +16,9 @@ const MintNftToExisitingCollectionForm: NextPage = () => {
 
   const [files, setFiles] = useState<File[] | null>(null);
   const [nftStorageApiKey, setNftStorageApiKey] = useState('');
-  const [nftSymbol, setNftSymbol] = useState('');
   const [nftName, setNftName] = useState('');
+  const [supplyKeyString, setSupplyKeyString] = useState('');
+  const [tokenId, setTokenId] = useState('');
   const [nftDescription, setNftDescription] = useState('');
   const [nftCreator, setNftCreator] = useState('');
 
@@ -24,7 +26,7 @@ const MintNftToExisitingCollectionForm: NextPage = () => {
     <>
       <Container>
         <div>
-          <h1>Mint NFT for an existing</h1>
+          <h1>Mint NFT to an Existing Collection</h1>
         </div>
 
         <Dropzone
@@ -50,10 +52,10 @@ const MintNftToExisitingCollectionForm: NextPage = () => {
         <TextInput
           onChange={(elm) => {
             if (elm.target.value) {
-              setNftStorageApiKey(elm.target.value);
+              setTokenId(elm.target.value);
             }
           }}
-          value={nftStorageApiKey}
+          value={tokenId}
           type="text"
           label="Token Id"
           required
@@ -62,10 +64,10 @@ const MintNftToExisitingCollectionForm: NextPage = () => {
         <TextInput
           onChange={(elm) => {
             if (elm.target.value) {
-              setNftName(elm.target.value);
+              setSupplyKeyString(elm.target.value);
             }
           }}
-          value={nftName}
+          value={supplyKeyString}
           type="text"
           label="Supply Key"
           required
@@ -92,18 +94,6 @@ const MintNftToExisitingCollectionForm: NextPage = () => {
           value={nftName}
           type="text"
           label="Name:"
-          required
-        />
-
-        <TextInput
-          onChange={(elm) => {
-            if (elm.target.value) {
-              setNftSymbol(elm.target.value);
-            }
-          }}
-          value={nftSymbol}
-          type="text"
-          label="Symbol:"
           required
         />
 
@@ -137,10 +127,11 @@ const MintNftToExisitingCollectionForm: NextPage = () => {
           }
 
           const client = createHederaClient(selectedNetwork, accountId, privateKey);
-          const txnResponse = await createNewNftCollection(
+          const supplyKey = PrivateKey.fromString(supplyKeyString);
+          const txnResponse = await addNftsToExistingCollection(
             client,
-            nftName,
-            nftSymbol.toUpperCase(),
+            tokenId,
+            supplyKey,
             nftStorageApiKey,
             {
               name: nftName,
@@ -149,7 +140,7 @@ const MintNftToExisitingCollectionForm: NextPage = () => {
             },
             files);
           console.log(txnResponse);
-        }}>Mint NFT</Button>
+        }}>Mint NFT To Existing Collection</Button>
 
       </Container>
     </>

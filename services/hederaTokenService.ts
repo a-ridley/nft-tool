@@ -58,7 +58,7 @@ export const mintToken = async (client: Client, tokenId: string | TokenId, metad
 
 export const addNftsToExistingCollection = async (
   client: Client,
-  tokenId: TokenId,
+  tokenId: TokenId | string,
   supplyKey: PrivateKey,
   nftStorageApiKey: string,
   metadataUploadInfo: MetadataUploadInfo,
