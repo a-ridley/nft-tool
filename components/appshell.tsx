@@ -54,6 +54,12 @@ export const AppShellDemo = (props: {
                 Mint NFTs
               </Button>
             </Link>
+            <Space h="md" />
+            <Link href="/mintNftToExisitingCollectionForm" passHref>
+              <Button component="a">
+                Mint NFTs To Existing Collection
+              </Button>
+            </Link>
           </Aside>
         </MediaQuery>
       }
