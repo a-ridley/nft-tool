@@ -61,7 +61,7 @@ const SendNftForm: NextPage = () => {
           Submit
         </Button>
 
-        <h3>Note: Make sure the wallet has all the serial numbers of the NFTs that you are sending in the account and the code is updated.</h3>
+        <h3 style={{color: 'red'}}>Note: Make sure the wallet has all the serial numbers of the NFTs that you are sending in the account and the code is updated.</h3>
       </Container>
     </>
   )
