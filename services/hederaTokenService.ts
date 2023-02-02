@@ -89,12 +89,14 @@ export const createNewNftCollection = async (
   const [treasuryAccountId, treasuryAccPvKey] = await createAccount(client, 10);
   // generate supply key
   const supplyKey = PrivateKey.generateED25519();
+  console.log(`SAVE THIS: Supply Key: ${supplyKey}`;
+
   // create token type 
   if (treasuryAccountId === null) {
     throw new Error("treasuryAccountId is null");
   }
 
-  console.log(`Treasury Account Id: ${treasuryAccountId} Treasury Account Private Key: ${treasuryAccPvKey}`);
+  console.log(`SAVE THESE: Treasury Account Id: ${treasuryAccountId} Treasury Account Private Key: ${treasuryAccPvKey}`);
 
   const tokenId = await createNonFungibleToken(client, treasuryAccountId, supplyKey, treasuryAccPvKey, tokenName, tokenSymbol);
   if (tokenId === null) {
