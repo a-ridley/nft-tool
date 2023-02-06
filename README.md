@@ -26,3 +26,6 @@ and sumbit.
 Currently, creates a new treasury account each time and requires you to update the code with the metadata required to mint. 
 Once that is done, hit the submit button.
 
+### Mint NFT to an Existing Collection
+Connect your client, then provide the supply key, token Id, nft storage api key, and metadata to mint to an existing collection
+
